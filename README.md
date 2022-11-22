@@ -2,7 +2,7 @@
 
 A library for custom logging in bash called '**[b-log](https://github.com/idelsink/b-log)**'.
 Based on the idea of [log.sh](https://github.com/livibetter-backup/log.sh).
-Origin from [https://github.com/idelsink/b-log] (https://github.com/idelsink/b-log)
+Origin from [https://github.com/idelsink/b-log](https://github.com/idelsink/b-log)
 ## Features
 
 This library has the following features:
