@@ -2,7 +2,7 @@
 
 A library for custom logging in bash called '**[b-log](https://github.com/idelsink/b-log)**'.
 Based on the idea of [log.sh](https://github.com/livibetter-backup/log.sh).
-
+Origin from [https://github.com/idelsink/b-log] (https://github.com/idelsink/b-log)
 ## Features
 
 This library has the following features:
@@ -109,13 +109,14 @@ From here all the parameters can be set.
 
 ```text
 Example of
-b-log v1.2.0
+b-log v1.2.1
 
 Usage: B_LOG [options]
   -h, --help              Show usage
   -V, --version           Version
   -d, --date-format       Date format used in the log eg. '%Y-%m-%d %H:%M:%S.%N'
-  -o, --stdout            Log over stdout (true/false) default true.
+  -o, --stdout            Log over stdout (true/false) default false. 
+  -e, --stderr            Log over stderr (true/false) default true.
   -f, --file              File to log to, none set means disabled
   --file-prefix-enable    Enable the prefix for the log file
   --file-prefix-disable   Disable the prefix for the log file

@@ -2,7 +2,9 @@
 #########################################################################
 # Script Name: b-log
 # Script Version: See B_LOG_VERSION
-# Script Date: 30 June 2016
+# Script Date: 2022-11-22
+# Source: https://github.com/berx/b-log
+# Original: https://github.com/idelsink/b-log
 #########################################################################
 #
 # a bash-logging interface, hence the name b-log.
@@ -18,7 +20,7 @@
 #set -o pipefail # prevents errors in a pipeline from being masked
 
 B_LOG_APPNAME="b-log"
-B_LOG_VERSION=1.2.0
+B_LOG_VERSION=1.2.1
 
 # --- global variables ----------------------------------------------
 # log levels
@@ -71,7 +73,8 @@ readonly LOG_LEVELS_PREFIX=3
 readonly LOG_LEVELS_SUFFIX=4
 
 LOG_LEVEL=${LOG_LEVEL_WARN}     # current log level
-B_LOG_LOG_VIA_STDOUT=true       # log via stdout
+B_LOG_LOG_VIA_STDOUT=false      # log via stdout
+B_LOG_LOG_VIA_STDERR=true       # log via stderr ( >2 )
 B_LOG_LOG_VIA_FILE=""           # file if logging via file (file, add suffix, add prefix)
 B_LOG_LOG_VIA_FILE_PREFIX=false # add prefix to log file
 B_LOG_LOG_VIA_FILE_SUFFIX=false # add suffix to log file
@@ -105,7 +108,8 @@ function B_LOG(){
         echo "  -h, --help              Show usage"
         echo "  -V, --version           Version"
         echo "  -d, --date-format       Date format used in the log eg. '%Y-%m-%d %H:%M:%S.%N'"
-        echo "  -o, --stdout            Log over stdout (true/false) default true."
+        echo "  -o, --stdout            Log over stdout (true/false) default false."
+        echo "  -e, --stderr            Log over stderr (true/false) default true. "
         echo "  -f, --file              File to log to, none set means disabled"
         echo "  --file-prefix-enable    Enable the prefix for the log file"
         echo "  --file-prefix-disable   Disable the prefix for the log file"
@@ -134,6 +138,7 @@ function B_LOG(){
             "--log-level") set -- "$@" "-l" ;;
             "--date-format") set -- "$@" "-d" ;;
             "--stdout") set -- "$@" "-o" ;;
+            "--stderr") set -- "$@" "-e" ;;
             "--file") set -- "$@" "-f" ;;
             "--file-prefix-enable") set -- "$@" "-a" "file-prefix-enable" ;;
             "--file-prefix-disable") set -- "$@" "-a" "file-prefix-disable" ;;
@@ -144,7 +149,7 @@ function B_LOG(){
       esac
     done
     # get options
-    while getopts "hVd:o:f:s:l:a:" optname
+    while getopts "hVd:o:e:f:s:l:a:" optname
     do
         case "$optname" in
             "h")
@@ -161,6 +166,13 @@ function B_LOG(){
                     B_LOG_LOG_VIA_STDOUT=true
                 else
                     B_LOG_LOG_VIA_STDOUT=false
+                fi
+                ;;
+            "e")
+                if [ "${OPTARG}" = true ]; then
+                    B_LOG_LOG_VIA_STDERR=true
+                else
+                    B_LOG_LOG_VIA_STDERR=false
                 fi
                 ;;
             "f")
@@ -317,10 +329,17 @@ function B_LOG_print_message() {
     B_LOG_get_log_level_info "${log_level}" || true
     B_LOG_convert_template ${LOG_FORMAT} || true
     # output to stdout
+
     if [ "${B_LOG_LOG_VIA_STDOUT}" = true ]; then
         echo -ne "$LOG_PREFIX"
         echo -ne "${B_LOG_CONVERTED_TEMPLATE_STRING}"
         echo -e "$LOG_SUFFIX"
+    fi
+
+    if [ "${B_LOG_LOG_VIA_STDERR}" = true ]; then
+        echo -ne "$LOG_PREFIX" 1>&2
+        echo -ne "${B_LOG_CONVERTED_TEMPLATE_STRING}" 1>&2
+        echo -e "$LOG_SUFFIX" 1>&2
     fi
     # output to file
     if [ ! -z "${B_LOG_LOG_VIA_FILE}" ]; then
