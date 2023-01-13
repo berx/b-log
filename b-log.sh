@@ -149,7 +149,7 @@ function B_LOG(){
       esac
     done
     # get options
-    while getopts "hVd:o:e:f:s:l:a:" optname
+    while getopts "hVd:oef:s:l:a:" optname
     do
         case "$optname" in
             "h")
